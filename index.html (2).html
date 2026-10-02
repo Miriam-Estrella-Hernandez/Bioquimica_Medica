@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BioAmino - Plataforma de Estudio de Aminoácidos</title>
+    <title>BioAmino - Plataforma de Estudio de Aminoácidos en Bioquímica Médica</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts Inter & Outfit -->
@@ -33,13 +33,6 @@
                             400: '#4ade80',
                             500: '#10b981',
                             600: '#059669',
-                        },
-                        bio: {
-                            nonpolar: '#fef3c7', // amber-100
-                            polar: '#e0f2fe', // sky-100
-                            acidic: '#ffe4e6', // rose-100
-                            basic: '#f3e8ff', // purple-100
-                            aromatic: '#dcfce7', // emerald-100
                         }
                     },
                     fontFamily: {
@@ -66,22 +59,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(3, 105, 161, 0.5);
         }
-        .card-flip {
-            perspective: 1000px;
-        }
-        .card-flip-inner {
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        .card-flip.flipped .card-flip-inner {
-            transform: rotateY(180deg);
-        }
-        .card-front, .card-back {
-            backface-visibility: hidden;
-        }
-        .card-back {
-            transform: rotateY(180deg);
-        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
@@ -104,7 +81,10 @@
                 <!-- Navigation Tabs -->
                 <nav class="hidden md:flex space-x-1 lg:space-x-2">
                     <button onclick="switchTab('dictionary')" id="nav-dictionary" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 text-medical-600 bg-medical-50 font-semibold">
-                        <i class="fa-solid fa-book-bookmark"></i> Diccionario
+                        <i class="fa-solid fa-book-bookmark"></i> Diccionario & Fichas
+                    </button>
+                    <button onclick="switchTab('theory')" id="nav-theory" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-microscope"></i> Características Bioquímicas
                     </button>
                     <button onclick="switchTab('games')" id="nav-games" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2">
                         <i class="fa-solid fa-gamepad"></i> Juegos & Repaso
@@ -117,7 +97,7 @@
                     </button>
                 </nav>
 
-                <!-- Action Button / Repaso Rápido -->
+                <!-- Action Button -->
                 <div class="flex items-center space-x-2">
                     <button onclick="openRandomCard()" class="bg-gradient-to-r from-mint-500 to-teal-600 hover:from-mint-600 hover:to-teal-700 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg shadow-sm flex items-center gap-2 transition-all transform active:scale-95">
                         <i class="fa-solid fa-shuffle"></i> <span class="hidden xs:inline">Aminoácido</span> Aleatorio
@@ -127,21 +107,25 @@
         </div>
 
         <!-- Mobile Bottom Nav -->
-        <div class="md:hidden flex justify-around border-t border-slate-200 bg-white py-2 px-1">
-            <button onclick="switchTab('dictionary')" id="mobile-nav-dictionary" class="flex flex-col items-center py-1 text-xs text-medical-600 font-semibold">
-                <i class="fa-solid fa-book-bookmark text-base mb-1"></i>
+        <div class="md:hidden flex justify-around border-t border-slate-200 bg-white py-2 px-1 text-xs">
+            <button onclick="switchTab('dictionary')" id="mobile-nav-dictionary" class="flex flex-col items-center py-1 text-medical-600 font-semibold">
+                <i class="fa-solid fa-book-bookmark text-base mb-0.5"></i>
                 <span>Fichas</span>
             </button>
-            <button onclick="switchTab('games')" id="mobile-nav-games" class="flex flex-col items-center py-1 text-xs text-slate-500">
-                <i class="fa-solid fa-gamepad text-base mb-1"></i>
+            <button onclick="switchTab('theory')" id="mobile-nav-theory" class="flex flex-col items-center py-1 text-slate-500">
+                <i class="fa-solid fa-microscope text-base mb-0.5"></i>
+                <span>Teoría</span>
+            </button>
+            <button onclick="switchTab('games')" id="mobile-nav-games" class="flex flex-col items-center py-1 text-slate-500">
+                <i class="fa-solid fa-gamepad text-base mb-0.5"></i>
                 <span>Juegos</span>
             </button>
-            <button onclick="switchTab('calculator')" id="mobile-nav-calculator" class="flex flex-col items-center py-1 text-xs text-slate-500">
-                <i class="fa-solid fa-flask text-base mb-1"></i>
-                <span>Simulador</span>
+            <button onclick="switchTab('calculator')" id="mobile-nav-calculator" class="flex flex-col items-center py-1 text-slate-500">
+                <i class="fa-solid fa-flask text-base mb-0.5"></i>
+                <span>pH & pI</span>
             </button>
-            <button onclick="switchTab('stats')" id="mobile-nav-stats" class="flex flex-col items-center py-1 text-xs text-slate-500">
-                <i class="fa-solid fa-chart-line text-base mb-1"></i>
+            <button onclick="switchTab('stats')" id="mobile-nav-stats" class="flex flex-col items-center py-1 text-slate-500">
+                <i class="fa-solid fa-chart-line text-base mb-0.5"></i>
                 <span>Progreso</span>
             </button>
         </div>
@@ -152,7 +136,6 @@
 
         <!-- TAB 1: DICCIONARIO / FICHAS DE ESTUDIO -->
         <section id="tab-dictionary" class="tab-content block space-y-6">
-            <!-- Banner Introductorio y Buscador -->
             <div class="bg-gradient-to-r from-medical-800 to-medical-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-bold select-none">
                     <i class="fa-solid fa-cubes-stacked"></i>
@@ -161,10 +144,9 @@
                     <h1 class="font-heading text-2xl sm:text-3xl font-bold mb-2">Diccionario de Aminoácidos</h1>
                     <p class="text-medical-100 text-sm sm:text-base mb-6">Explora las propiedades químicas, valores de pKa, punto isoeléctrico y la relevancia clínica de los 20 aminoácidos proteicos.</p>
                     
-                    <!-- Search Input -->
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="searchInput" oninput="filterAminoAcids()" placeholder="Buscar por nombre (ej. Lisina), símbolo 3L (Gly) o 1L (K)..." 
+                        <input type="text" id="searchInput" oninput="filterAminoAcids()" placeholder="Buscar por nombre (ej. Lisina), símbolo 3L (Gly), 1L (K) o patología..." 
                             class="w-full pl-11 pr-4 py-3 rounded-xl bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-mint-400 shadow-md font-medium text-sm sm:text-base">
                     </div>
                 </div>
@@ -180,7 +162,6 @@
                 </div>
                 
                 <div class="flex flex-wrap gap-2" id="filterButtons">
-                    <!-- Categorías Químicas -->
                     <button onclick="setFilter('all')" data-filter="all" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-lg border bg-medical-600 text-white border-medical-600 transition">Todos (20)</button>
                     <button onclick="setFilter('apolar')" data-filter="apolar" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-lg border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition">Apolares / Alifáticos</button>
                     <button onclick="setFilter('aromatic')" data-filter="aromatic" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-lg border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition">Aromáticos</button>
@@ -188,7 +169,6 @@
                     <button onclick="setFilter('basic')" data-filter="basic" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-lg border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition">Cargados + (Básicos)</button>
                     <button onclick="setFilter('acidic')" data-filter="acidic" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-lg border bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 transition">Cargados - (Ácidos)</button>
                     <span class="w-full sm:w-auto h-4 sm:h-auto border-r border-slate-200 mx-1 hidden sm:inline"></span>
-                    <!-- Nutricional / Metabólico -->
                     <button onclick="setFilter('essential')" data-filter="essential" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-lg border bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100 transition">Esenciales</button>
                     <button onclick="setFilter('ketogenic')" data-filter="ketogenic" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-lg border bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100 transition">Cetogénicos</button>
                 </div>
@@ -199,7 +179,6 @@
                 <!-- Se poblará con JavaScript -->
             </div>
             
-            <!-- Mensaje si no hay resultados -->
             <div id="noResults" class="hidden text-center py-12 bg-white rounded-xl border border-slate-200">
                 <i class="fa-solid fa-vial-circle-check text-4xl text-slate-300 mb-3"></i>
                 <h3 class="font-bold text-slate-700">No se encontraron aminoácidos</h3>
@@ -207,15 +186,86 @@
             </div>
         </section>
 
-        <!-- TAB 2: JUEGOS Y REPASO INTERACTIVO -->
+        <!-- TAB 2: CARACTERÍSTICAS BIOQUÍMICAS GENERALES (NUEVA SECCIÓN TEÓRICA) -->
+        <section id="tab-theory" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <span class="text-xs font-bold text-medical-600 uppercase tracking-wider">Fundamentos para Bioquímica Médica</span>
+                    <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800 mt-1">Características Generales de los Aminoácidos</h2>
+                    <p class="text-sm text-slate-500 mt-1">Resumen estructurado de los aspectos físico-químicos, ácido-base, nutricionales y metabólicos clave para exámenes.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- 1. Estructura y Quiraldad -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center gap-2 text-medical-600 font-bold font-heading">
+                            <i class="fa-solid fa-cube text-lg"></i>
+                            <h3>1. Estructura C<sub>α</sub> y Estereoisomería</h3>
+                        </div>
+                        <ul class="text-xs sm:text-sm text-slate-600 space-y-2 list-disc list-inside leading-relaxed">
+                            <li><strong>Carbono Central ($\text{C}_\alpha$):</strong> Todos poseen un carbono tetraédrico unido a un grupo amino ($-\text{NH}_3^+$), un grupo carboxilo ($-\text{COO}^-$), un átomo de hidrógeno ($-\text{H}$) y una cadena lateral ($-\text{R}$).</li>
+                            <li><strong>Configuración L-Aminoácidos:</strong> 19 de los 20 aminoácidos son quirales (ópticamente activos) y existen como L o D. <strong>Únicamente la forma L forma parte de las proteínas humanas</strong>.</li>
+                            <li><strong>Excepción Aquiral (Glicina):</strong> La Glicina es el único aminoácido sin quiralidad porque su cadena $-\text{R}$ es otro átomo de hidrógeno ($-\text{H}$).</li>
+                            <li><strong>Estructura Cíclica (Prolina):</strong> La Prolina es un <em>iminoácido</em> rígido en el cual la cadena lateral forma un anillo unidiéndose de nuevo al nitrógeno amínico.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 2. Propiedades Ácido-Base -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center gap-2 text-medical-600 font-bold font-heading">
+                            <i class="fa-solid fa-bolt text-lg"></i>
+                            <h3>2. Comportamiento Anfotérico y Zwitterión</h3>
+                        </div>
+                        <ul class="text-xs sm:text-sm text-slate-600 space-y-2 list-disc list-inside leading-relaxed">
+                            <li><strong>Carácter Anfótero:</strong> Pueden actuar como ácidos o bases. A pH fisiológico ($\approx 7.4$), el carboxilo dona su protón ($-\text{COO}^-$) y el amino se protona ($-\text{NH}_3^+$).</li>
+                            <li><strong>Forma Zwitteriónica:</strong> Ion dipolar con carga neta neutra ($0$) a su punto isoeléctrico.</li>
+                            <li><strong>Punto Isoeléctrico ($\text{pI}$):</strong> pH en el cual la carga neta del aminoácido es cero. Calculado como el promedio de los $\text{p}K_a$ contiguos a la especie neutra:
+                                <div class="font-mono bg-white p-2 rounded text-center text-xs border border-slate-200 mt-1">
+                                    $$\text{pI} = \frac{\text{p}K_{a1} + \text{p}K_{a2}}{2}$$
+                                </div>
+                            </li>
+                            <li><strong>Efecto Buffer Biológico:</strong> La <strong>Histidina</strong> (pK_R = 6.0) actúa como el tampón fisiológico principal dentro de proteínas como la Hemoglobina.</li>
+                        </ul>
+                    </div>
+
+                    <!-- 3. Clasificación Nutricional -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center gap-2 text-amber-600 font-bold font-heading">
+                            <i class="fa-solid fa-utensils text-lg"></i>
+                            <h3>3. Clasificación Nutricional</h3>
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-600 space-y-2">
+                            <p><strong>Esenciales (9):</strong> El organismo no sintetiza sus esqueletos carbonados; deben obtenerse de la dieta (<em>Histidina, Isoleucina, Leucina, Lisina, Metionina, Fenilalanina, Treonina, Triptófano, Valina</em>).</p>
+                            <p><strong>No Esenciales (5):</strong> Sintetizados endógenamente a partir de metabolitos como piruvato o alfa-cetoglutarato (<em>Alanina, Aspartato, Glutamato, Asparagina, Serina</em>).</p>
+                            <p><strong>Condicionalmente Esenciales (6):</strong> Requeridos en la dieta durante crecimiento, enfermedad o estrés metabólico (<em>Cisteína, Tirosina, Glutamina, Prolina, Arginina, Glicina</em>).</p>
+                        </div>
+                    </div>
+
+                    <!-- 4. Destino Metabólico -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex items-center gap-2 text-purple-600 font-bold font-heading">
+                            <i class="fa-solid fa-fire text-lg"></i>
+                            <h3>4. Destino Metabólico</h3>
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-600 space-y-2">
+                            <p><strong>Glucogénicos (13):</strong> Se degradan a piruvato o intermediarios del Ciclo de Krebs (precursores de gluconeogénesis).</p>
+                            <p><strong>Cetogénicos Puros (2):</strong> <strong>Leucina y Lisina</strong> se degradan exclusivamente a Acetil-CoA o Acetoacetato (cuerpos cetónicos).</p>
+                            <p><strong>Mixtos (4):</strong> Rinden productos tanto glucogénicos como cetogénicos (<em>Isoleucina, Fenilalanina, Triptófano, Tirosina</em>).</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: JUEGOS Y REPASO INTERACTIVO -->
         <section id="tab-games" class="tab-content hidden space-y-6">
-            <!-- Header Sección Juegos -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                 <div>
                     <h2 class="font-heading text-2xl font-bold text-slate-800">Centro de Entrenamiento y Repaso</h2>
                     <p class="text-sm text-slate-500">Refuerza tu memoria activa con distintas dinámicas de juego preparadas para exámenes médicos.</p>
                 </div>
-                <!-- Mini Scoreboard -->
                 <div class="flex items-center gap-4 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm self-start">
                     <div class="text-center">
                         <span class="block text-xs text-slate-400 font-medium">Puntos Totales</span>
@@ -229,61 +279,53 @@
                 </div>
             </div>
 
-            <!-- Seleccionar Juego (Tarjetas) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Card Juego 1 -->
                 <div onclick="selectGame('quiz')" id="game-card-quiz" class="cursor-pointer bg-white p-5 rounded-2xl border-2 border-medical-500 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
                     <div class="w-10 h-10 rounded-xl bg-medical-100 text-medical-600 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-circle-question text-xl"></i>
                     </div>
                     <h3 class="font-heading font-bold text-slate-800 text-lg">Quiz Examen Bioquímico</h3>
-                    <p class="text-xs text-slate-500 mt-1">Preguntas multiorigen sobre códigos, pI, cargas y grupo R.</p>
+                    <p class="text-xs text-slate-500 mt-1">Preguntas sobre códigos, pI, cargas y grupo R.</p>
                 </div>
 
-                <!-- Card Juego 2 -->
                 <div onclick="selectGame('match')" id="game-card-match" class="cursor-pointer bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
                     <div class="w-10 h-10 rounded-xl bg-mint-100 text-mint-600 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-diagram-project text-xl"></i>
                     </div>
                     <h3 class="font-heading font-bold text-slate-800 text-lg">Desafío de Emparejamiento</h3>
-                    <p class="text-xs text-slate-500 mt-1">Conecta el aminoácido con su código de 1 letra o grupo químico.</p>
+                    <p class="text-xs text-slate-500 mt-1">Conecta el aminoácido con su código o clasificación.</p>
                 </div>
 
-                <!-- Card Juego 3 -->
                 <div onclick="selectGame('clinical')" id="game-card-clinical" class="cursor-pointer bg-white p-5 rounded-2xl border-2 border-slate-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
                     <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold mb-3 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-user-doctor text-xl"></i>
                     </div>
                     <h3 class="font-heading font-bold text-slate-800 text-lg">Casos de Relevancia Clínica</h3>
-                    <p class="text-xs text-slate-500 mt-1">Adivina el aminoácido según patologías, neurotransmisores o vía metabólica.</p>
+                    <p class="text-xs text-slate-500 mt-1">Deduce el aminoácido según patologías y rutas biológicas.</p>
                 </div>
             </div>
 
-            <!-- Área Activa de Juego -->
             <div id="gameActiveArea" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-md min-h-[350px] flex flex-col justify-between">
-                <!-- Se inyecta la interfaz del juego mediante JS -->
+                <!-- Inyectado vía JS -->
             </div>
         </section>
 
-        <!-- TAB 3: SIMULADOR DE pH & CALCULA DE pI -->
+        <!-- TAB 4: SIMULADOR DE pH & CALCULA DE pI -->
         <section id="tab-calculator" class="tab-content hidden space-y-6">
             <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div>
                     <h2 class="font-heading text-2xl font-bold text-slate-800">Simulador de Estado de Protonación y Carga Neta</h2>
-                    <p class="text-sm text-slate-500">Ajusta el valor de pH y selecciona un aminoácido para observar cómo cambia su estado iónico, calculando el Punto Isoeléctrico (pI).</p>
+                    <p class="text-sm text-slate-500">Ajusta el pH para observar cómo cambian las formas iónicas y el Punto Isoeléctrico (pI).</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Panel Izquierdo: Selección -->
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">1. Selecciona Aminoácido</label>
                             <select id="calcAminoSelect" onchange="updateProtonationSimulation()" class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 font-semibold text-slate-800 focus:ring-2 focus:ring-medical-500 outline-none">
-                                <!-- Opciones cargadas dinámicamente -->
                             </select>
                         </div>
 
-                        <!-- Info rápida de pKa del aminoácido -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-sm">
                             <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wide">Constantes de Disociación (pKa)</h4>
                             <div class="flex justify-between text-slate-600">
@@ -305,9 +347,7 @@
                         </div>
                     </div>
 
-                    <!-- Panel Central/Derecho: Control pH y Simulación Visual -->
                     <div class="lg:col-span-2 space-y-6 flex flex-col justify-between">
-                        <!-- Slider de pH -->
                         <div class="bg-gradient-to-r from-medical-50 to-mint-50 p-5 rounded-xl border border-medical-100">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="font-bold text-slate-700">Ajustar pH Solución:</label>
@@ -322,7 +362,6 @@
                             </div>
                         </div>
 
-                        <!-- Diagrama de Carga del Aminoácido -->
                         <div class="bg-white p-6 rounded-xl border-2 border-slate-200 flex flex-col items-center justify-center space-y-4">
                             <div class="text-center">
                                 <span class="text-xs uppercase text-slate-400 font-bold tracking-wider">Carga Neta Predominante a pH <span id="phLabelInCard">7.4</span></span>
@@ -331,7 +370,6 @@
                                 </div>
                             </div>
 
-                            <!-- Esquema Molécula -->
                             <div class="w-full max-w-md bg-slate-50 p-4 rounded-xl border border-slate-200 text-center font-mono text-sm space-y-2">
                                 <div class="flex justify-center items-center gap-2">
                                     <span id="aminoGroupState" class="px-2 py-1 rounded bg-mint-100 text-mint-800 font-bold transition-all">H₃N⁺</span>
@@ -350,10 +388,9 @@
             </div>
         </section>
 
-        <!-- TAB 4: ESTADÍSTICAS Y AUTOEVALUACIÓN -->
+        <!-- TAB 5: ESTADÍSTICAS Y AUTOEVALUACIÓN -->
         <section id="tab-stats" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Card Favoritos / Para Repasar -->
                 <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="font-heading font-bold text-lg text-slate-800 flex items-center gap-2">
@@ -362,11 +399,9 @@
                         <span id="favCount" class="text-xs font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">0 marcados</span>
                     </div>
                     <div id="favoritesList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 min-h-[120px]">
-                        <!-- Se llena con Javascript -->
                     </div>
                 </div>
 
-                <!-- Resumen de Métricas -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                     <h3 class="font-heading font-bold text-lg text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-trophy text-medical-600"></i> Rendimiento Total
@@ -382,7 +417,7 @@
                             <span id="totalCorrectAnswers" class="font-bold text-emerald-600">0</span>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
-                            <span class="text-sm font-medium text-slate-600">Precisión Globat:</span>
+                            <span class="text-sm font-medium text-slate-600">Precisión Global:</span>
                             <span id="accuracyPercentage" class="font-bold text-medical-600">0%</span>
                         </div>
                     </div>
@@ -399,12 +434,10 @@
     <!-- Modal Detalle Completo de Aminoácido -->
     <div id="aminoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl border border-slate-100 p-6 space-y-6 relative animate-in fade-in zoom-in-95 duration-200">
-            <!-- Botón Cerrar -->
             <button onclick="closeModal()" class="absolute right-4 top-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Encabezado Modal -->
             <div class="flex items-start gap-4">
                 <div id="modalLetterCode" class="w-16 h-16 rounded-2xl bg-medical-600 text-white flex items-center justify-center text-3xl font-heading font-extrabold shadow-md shrink-0">
                     A
@@ -418,14 +451,12 @@
                     </div>
                     <p class="text-sm text-slate-500">Código de 3 letras: <span id="modal3L" class="font-bold text-slate-700">Ala</span></p>
                     <div id="modalBadges" class="flex flex-wrap gap-1.5 mt-2">
-                        <!-- Badges dinámicos -->
                     </div>
                 </div>
             </div>
 
             <hr class="border-slate-100">
 
-            <!-- Propiedades Físico-Químicas -->
             <div>
                 <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3">Constantes Físico-Químicas (pKa & pI)</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
@@ -448,26 +479,22 @@
                 </div>
             </div>
 
-            <!-- Estructura Cadena Lateral (R) -->
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <h3 class="text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">Cadena Lateral (Grupo R)</h3>
                 <p id="modalGroupR" class="font-mono text-sm text-slate-800 font-semibold bg-white p-2.5 rounded-lg border border-slate-200">-CH3 (Metilo)</p>
             </div>
 
-            <!-- Importancia Médica y Clínica -->
             <div>
                 <h3 class="text-xs font-bold uppercase text-medical-600 tracking-wider mb-2 flex items-center gap-1.5">
                     <i class="fa-solid fa-notes-medical"></i> Importancia Médica & Clínica
                 </h3>
                 <div id="modalClinical" class="bg-medical-50/50 p-4 rounded-xl border border-medical-100 text-sm text-slate-700 space-y-2 leading-relaxed">
-                    <!-- Detalle clínico -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // BASE DE DATOS COMPLETA DE LOS 20 AMINOÁCIDOS CON INFORMACIÓN MÉDICA DETALLADA
         const aminoAcids = [
             {
                 id: 'ala',
@@ -492,7 +519,7 @@
                 code1: 'R',
                 category: 'basic',
                 categoryLabel: 'Cargado Positivamente (Básico)',
-                essential: false, // Condicionalmente esencial
+                essential: false,
                 essentialNote: 'Condicionalmente Esencial',
                 metabolic: 'glucogenic',
                 pk1: 2.17,
@@ -500,7 +527,7 @@
                 pkR: 12.48,
                 pI: 10.76,
                 groupR: '-(CH₂)₃-NH-C(=NH⁺)-NH₂ (Guanidino)',
-                clinical: 'Precursor inmediato de Óxido Nítrico (NO), un potente vasodilatador arterial. Interviene en el ciclo de la urea en el hígado para eliminar el amoniaco tóxico. Esencial durante etapas de crecimiento rápido e infecciones graves.'
+                clinical: 'Precursor inmediato de Óxido Nítrico (NO), un potente vasodilatador arterial. Interviene en el ciclo de la urea en el hígado para eliminar el amoniaco tóxico. Esencial durante etapas de crecimiento rápido.'
             },
             {
                 id: 'asn',
@@ -516,7 +543,7 @@
                 pkR: null,
                 pI: 5.41,
                 groupR: '-CH₂-CO-NH₂ (Amida)',
-                clinical: 'Sitio clave para la N-glicosilación de proteínas en el retículo endoplásmico. Las células leucémicas (LMA) dependen de la asparagina circulante; por ello, la L-asparaginasa se usa como fármaco quimioterapéutico.'
+                clinical: 'Sitio clave para la N-glicosilación de proteínas en el retículo endoplásmico. Las células leucémicas dependen de la asparagina circulante; la L-asparaginasa se utiliza como quimioterapéutico.'
             },
             {
                 id: 'asp',
@@ -532,7 +559,7 @@
                 pkR: 3.65,
                 pI: 2.77,
                 groupR: '-CH₂-COO⁻ (Carboxilo)',
-                clinical: 'Participa en la lanzadera de Malato-Aspartato para la transferencia de equivalentes reductores NADH a la mitocondria. Dona un nitrógeno en el ciclo de la urea y es precursor en la síntesis de pirimidinas.'
+                clinical: 'Participa en la lanzadera de Malato-Aspartato para transferir equivalentes reductores NADH a la mitocondria. Dona un nitrógeno en el ciclo de la urea y es precursor en la síntesis de pirimidinas.'
             },
             {
                 id: 'cys',
@@ -548,7 +575,7 @@
                 pkR: 8.18,
                 pI: 5.07,
                 groupR: '-CH₂-SH (Tiol / Sulfhidrilo)',
-                clinical: 'Forma puentes disulfuro (Cistina) fundamentales para la estructura terciaria de proteínas (ej. Insulina, inmunoglobulinas). Es el aminoácido limitante en la síntesis de Glutatión (antioxidante primario celular).'
+                clinical: 'Forma puentes disulfuro (Cistina) fundamentales para la estructura terciaria de proteínas (ej. Insulina). Es el aminoácido limitante en la síntesis de Glutatión (antioxidante primario celular).'
             },
             {
                 id: 'gln',
@@ -564,7 +591,7 @@
                 pkR: null,
                 pI: 5.65,
                 groupR: '-(CH₂)₂-CO-NH₂ (Amida)',
-                clinical: 'El aminoácido libre más abundante en el plasma sanguíneo. Actúa como el principal vehículo no tóxico de transporte de amoniaco en sangre hacia los riñones. Combustible prioritario para enterocitos e inmunocitos.'
+                clinical: 'El aminoácido libre más abundante en sangre. Vehículo no tóxico principal de transporte de amoniaco hacia los riñones. Combustible prioritario para enterocitos e inmunocitos.'
             },
             {
                 id: 'glu',
@@ -580,11 +607,11 @@
                 pkR: 4.25,
                 pI: 3.22,
                 groupR: '-(CH₂)₂-COO⁻ (Carboxilo)',
-                clinical: 'El principal neurotransmisor excitador en el Sistema Nervioso Central (SNC). Su exceso produce excitotoxicidad neuronal. Precursor directo del GABA (neurotransmisor inhibidor) por la glutamato descarboxilasa.'
+                clinical: 'Principal neurotransmisor excitador en el SNC. Su exceso produce excitotoxicidad neuronal. Precursor directo del GABA (neurotransmisor inhibidor) por la glutamato descarboxilasa.'
             },
             {
                 id: 'gly',
-                name: 'Glicina (Glicocola)',
+                name: 'Glicina',
                 code3: 'Gly',
                 code1: 'G',
                 category: 'apolar',
@@ -596,7 +623,7 @@
                 pkR: null,
                 pI: 5.97,
                 groupR: '-H (Único aminoácido aquiral)',
-                clinical: 'Aminoácido de menor tamaño. Ocupa cada tercer residuo en la triple hélice del Colágeno (Gly-X-Y). Esencial para la síntesis de Hemo, Porfirinas, Creatina, Sales Biliares y purinas. Neurotransmisor inhibidor medular.'
+                clinical: 'Aminoácido más pequeño. Ocupa cada tercer residuo en la triple hélice del Colágeno (Gly-X-Y). Esencial para la síntesis de Hemo, Porfirinas, Creatina, Sales Biliares y purinas.'
             },
             {
                 id: 'his',
@@ -612,7 +639,7 @@
                 pkR: 6.00,
                 pI: 7.59,
                 groupR: '-CH₂-Anillo Imidazol',
-                clinical: 'Su pKa_R próximo a 6.0 le permite actuar como tampón/buffer biológico en el pH fisiológico (ej. en la Hemoglobina). Descarboxilada produce Histamina, mediador clave en alergias y secreción ácida gástrica.'
+                clinical: 'Su pKa_R próximo a 6.0 le permite actuar como tampón/buffer biológico en el pH fisiológico (7.4) dentro de la Hemoglobina. Precursor de la Histamina (mediador alérgico y gástrico).'
             },
             {
                 id: 'ile',
@@ -622,13 +649,13 @@
                 category: 'apolar',
                 categoryLabel: 'Apolar / Alifático',
                 essential: true,
-                metabolic: 'both', // glucogénico y cetogénico
+                metabolic: 'both',
                 pk1: 2.36,
                 pk2: 9.68,
                 pkR: null,
                 pI: 6.02,
                 groupR: '-CH(CH₃)-CH₂-CH₃ (Cadena ramificada)',
-                clinical: 'Aminoácido de Cadena Ramificada (BCAA). Su metabolismo defectuoso junto con Leucina y Valina genera la Enfermedad del Jarabe de Arce (déficit de la α-cetoácido deshidrogenasa de cadena ramificada).'
+                clinical: 'Aminoácido de Cadena Ramificada (BCAA). Su metabolismo defectuoso junto con Leucina y Valina genera la Enfermedad del Jarabe de Arce (déficit de la α-cetoácido deshidrogenasa).'
             },
             {
                 id: 'leu',
@@ -638,13 +665,13 @@
                 category: 'apolar',
                 categoryLabel: 'Apolar / Alifático',
                 essential: true,
-                metabolic: 'ketogenic', // Estrictamente cetogénico
+                metabolic: 'ketogenic',
                 pk1: 2.36,
                 pk2: 9.60,
                 pkR: null,
                 pI: 5.98,
                 groupR: '-CH₂-CH(CH₃)₂ (Cadena ramificada)',
-                clinical: 'Potente estimulador de la síntesis proteica muscular vía activación del complejo mTORC1. Es uno de los dos aminoácidos estrictamente cetogénicos (junto a la Lisina).'
+                clinical: 'Estimulador de la síntesis proteica muscular vía activación de mTORC1. Uno de los dos aminoácidos estrictamente cetogénicos (junto a la Lisina).'
             },
             {
                 id: 'lys',
@@ -660,7 +687,7 @@
                 pkR: 10.53,
                 pI: 9.74,
                 groupR: '-(CH₂)₄-NH₃⁺ (Butylamino)',
-                clinical: 'Sufre hidroxilación (por lisil hidroxilasa con cofactor Vitamina C) para la maduración del colágeno. Las deficiencias causan Síndrome de Ehlers-Danlos o Escorbuto. Estrictamente cetogénico.'
+                clinical: 'Sufre hidroxilación (por lisil hidroxilasa con Vitamina C) para la maduración del colágeno. Deficiencias causan Síndrome de Ehlers-Danlos o Escorbuto. Estrictamente cetogénico.'
             },
             {
                 id: 'met',
@@ -676,7 +703,7 @@
                 pkR: null,
                 pI: 5.74,
                 groupR: '-(CH₂)₂-S-CH₃ (Tioéter)',
-                clinical: 'Primer aminoácido incorporado en la traducción de eucariotas (codón de inicio AUG). Precursor de S-Adenosilmetionina (SAM), el principal dador de grupos metilo en metilación de ADN y neurotransmisores.'
+                clinical: 'Primer aminoácido incorporado en la traducción de eucariotas (codón AUG). Precursor de S-Adenosilmetionina (SAM), el principal dador de grupos metilo en ADN y neurotransmisores.'
             },
             {
                 id: 'phe',
@@ -692,7 +719,7 @@
                 pkR: null,
                 pI: 5.48,
                 groupR: '-CH₂-Anillo Bencénico',
-                clinical: 'Precursor de la Tirosina vía Fenilalanina Hidroxilasa (PAH). El déficit de PAH causa Fenilcetonuria (PKU), provocando acumulación tóxica de fenilpiruvato y retraso mental grave no tratado.'
+                clinical: 'Precursor de Tirosina vía Fenilalanina Hidroxilasa (PAH). El déficit de PAH causa Fenilcetonuria (PKU), provocando acumulación de fenilpiruvato y retraso mental no tratado.'
             },
             {
                 id: 'pro',
@@ -708,7 +735,7 @@
                 pkR: null,
                 pI: 6.30,
                 groupR: 'Anillo Pirrolidina (Iminoácido)',
-                clinical: 'Único aminoácido con amina secundaria (grupo imino). Rompe estructuras de hélice alfa en proteínas. Su hidroxilación (Hidroxiprolina) estabiliza la hélice de colágeno.'
+                clinical: 'Único aminoácido con amina secundaria (iminoácido). Interrumpe hélices alfa. Su hidroxilación (Hidroxiprolina) estabiliza la hélice del colágeno.'
             },
             {
                 id: 'ser',
@@ -724,7 +751,7 @@
                 pkR: null,
                 pI: 5.68,
                 groupR: '-CH₂-OH (Hidroxilo)',
-                clinical: 'Sitio frecuente de fosforilación por quinasas en vías de transducción de señales. Participa en la O-glicosilación y en la síntesis de fosfolípidos de membrana como la fosfatidilserina.'
+                clinical: 'Sitio frecuente de fosforilación por quinasas en señalización celular. Participa en la O-glicosilación y en la síntesis de fosfolípidos como la fosfatidilserina.'
             },
             {
                 id: 'thr',
@@ -740,7 +767,7 @@
                 pkR: null,
                 pI: 5.60,
                 groupR: '-CH(OH)-CH₃ (Hidroxilo secundario)',
-                clinical: 'Junto a la serina, es el blanco de la O-glicosilación y fosforilación reguladora. Posee dos centros quirales en su estructura.'
+                clinical: 'Blanco de O-glicosilación y fosforilación reguladora. Posee dos centros quirales en su estructura.'
             },
             {
                 id: 'trp',
@@ -756,7 +783,7 @@
                 pkR: null,
                 pI: 5.89,
                 groupR: '-CH₂-Anillo Indol',
-                clinical: 'Precursor metabólico de la Serotonina (5-HT), Melatonina (sueño) y de la Niacina (Vitamina B3). La enfermedad de Hartnup provoca mala absorción de triptófano resultando en síntomas de Pelagra.'
+                clinical: 'Precursor de Serotonina (5-HT), Melatonina y Niacina (Vitamina B3). La enfermedad de Hartnup causa mala absorción de triptófano derivando en síntomas de Pelagra.'
             },
             {
                 id: 'tyr',
@@ -772,7 +799,7 @@
                 pkR: 10.07,
                 pI: 5.66,
                 groupR: '-CH₂-Anillo Fenol',
-                clinical: 'Precursor directo de Catecolaminas (Dopamina, Noradrenalina, Adrenalina), Hormonas Tiroideas (T3, T4) y Melanina. Su alteración catabólica causa Alcaptonuria o Albinismo.'
+                clinical: 'Precursor de Catecolaminas (Dopamina, Noradrenalina, Adrenalina), Hormonas Tiroideas (T3, T4) y Melanina. Su alteración catabólica causa Alcaptonuria o Albinismo.'
             },
             {
                 id: 'val',
@@ -788,18 +815,15 @@
                 pkR: null,
                 pI: 5.96,
                 groupR: '-CH(CH₃)₂ (Cadena ramificada)',
-                clinical: 'Aminoácido de cadena ramificada. En la Anemia de Células Falciformes (Drepanocitosis), la valina sustituye al glutamato en la posición 6 de la cadena β-globina (Glu6Val), causando polimerización.'
+                clinical: 'En la Anemia Falciforme (Drepanocitosis), la valina sustituye al glutamato en la posición 6 de la β-globina (Glu6Val), causando polimerización anómala.'
             }
         ];
 
-        // Estado Global de la App
         let activeFilter = 'all';
         let favorites = JSON.parse(localStorage.getItem('bioamino_favs')) || [];
         let stats = JSON.parse(localStorage.getItem('bioamino_stats')) || { total: 0, correct: 0, streak: 0, score: 0 };
         let currentGameMode = 'quiz';
-        let currentQuizQuestion = null;
 
-        // Inicialización al cargar la página
         window.onload = function() {
             renderDictionaryCards();
             populateCalculatorSelect();
@@ -808,7 +832,6 @@
             initQuizGame();
         };
 
-        // Cambiar pestañas
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
@@ -826,7 +849,6 @@
             if(tabId === 'stats') renderFavoritesList();
         }
 
-        // Renderizar las Tarjetas de Aminoácidos
         function renderDictionaryCards() {
             const grid = document.getElementById('aminoGrid');
             const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -835,7 +857,8 @@
             const filtered = aminoAcids.filter(aa => {
                 const matchesSearch = aa.name.toLowerCase().includes(searchVal) || 
                                       aa.code3.toLowerCase().includes(searchVal) || 
-                                      aa.code1.toLowerCase().includes(searchVal);
+                                      aa.code1.toLowerCase().includes(searchVal) ||
+                                      aa.clinical.toLowerCase().includes(searchVal);
                 
                 let matchesCategory = true;
                 if(activeFilter === 'essential') matchesCategory = aa.essential;
@@ -911,7 +934,6 @@
             }
         }
 
-        // Filtros
         function setFilter(cat) {
             activeFilter = cat;
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -933,7 +955,6 @@
             renderDictionaryCards();
         }
 
-        // Favoritos
         function toggleFavorite(id) {
             if(favorites.includes(id)) {
                 favorites = favorites.filter(f => f !== id);
@@ -947,7 +968,6 @@
             }
         }
 
-        // Modal Detalle
         function openModal(id) {
             const aa = aminoAcids.find(a => a.id === id);
             if(!aa) return;
@@ -962,7 +982,6 @@
             document.getElementById('modalGroupR').innerText = aa.groupR;
             document.getElementById('modalClinical').innerText = aa.clinical;
 
-            // Badges
             const badgesContainer = document.getElementById('modalBadges');
             badgesContainer.innerHTML = `
                 <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-semibold">${aa.categoryLabel}</span>
@@ -970,7 +989,6 @@
                 <span class="text-xs px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 font-semibold">${aa.metabolic === 'both' ? 'Glucogénico y Cetogénico' : (aa.metabolic === 'ketogenic' ? 'Estrictamente Cetogénico' : 'Glucogénico')}</span>
             `;
 
-            // Favorito Btn en Modal
             const modalFavBtn = document.getElementById('modalFavBtn');
             const isFav = favorites.includes(aa.id);
             modalFavBtn.innerHTML = `<i class="fa-${isFav ? 'solid' : 'regular'} fa-star ${isFav ? 'text-amber-400' : ''}"></i>`;
@@ -991,7 +1009,7 @@
             openModal(aminoAcids[randomIndex].id);
         }
 
-        // JUEGOS Y REPASO
+        // JUEGOS
         function selectGame(mode) {
             currentGameMode = mode;
             document.querySelectorAll('[id^="game-card-"]').forEach(card => {
@@ -1008,8 +1026,6 @@
         function initQuizGame() {
             const container = document.getElementById('gameActiveArea');
             const targetAa = aminoAcids[Math.floor(Math.random() * aminoAcids.length)];
-            
-            // Elegir tipo de pregunta
             const questionTypes = ['code1', 'category', 'pi'];
             const qType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
 
@@ -1028,13 +1044,7 @@
             } else if(qType === 'category') {
                 questionText = `¿A qué clasificación química pertenece el aminoácido "${targetAa.name}"?`;
                 correctAnswer = targetAa.categoryLabel;
-                options = [
-                    'Apolar / Alifático',
-                    'Polar no cargado',
-                    'Cargado Positivamente (Básico)',
-                    'Cargado Negativamente (Ácido)',
-                    'Aromático'
-                ];
+                options = ['Apolar / Alifático', 'Polar no cargado', 'Cargado Positivamente (Básico)', 'Cargado Negativamente (Ácido)', 'Aromático'];
             } else if(qType === 'pi') {
                 questionText = `¿Cuál es el Punto Isoeléctrico (pI) aproximado de "${targetAa.name}"?`;
                 correctAnswer = targetAa.pI.toString();
@@ -1053,9 +1063,7 @@
                         <span>PREGUNTA DE OPCIÓN MÚLTIPLE</span>
                         <span class="text-medical-600"><i class="fa-solid fa-bolt"></i> +10 Puntos</span>
                     </div>
-
                     <h3 class="font-heading text-xl font-bold text-slate-800">${questionText}</h3>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quizOptionsGrid">
                         ${options.map(opt => `
                             <button onclick="checkQuizAnswer(this, '${opt}', '${correctAnswer}')" class="p-4 rounded-xl border border-slate-200 hover:border-medical-500 hover:bg-medical-50 font-semibold text-slate-700 text-left transition flex justify-between items-center">
@@ -1065,7 +1073,6 @@
                         `).join('')}
                     </div>
                 </div>
-
                 <div id="quizFeedback" class="mt-4 hidden p-4 rounded-xl font-semibold text-sm flex justify-between items-center">
                     <span id="quizFeedbackText"></span>
                     <button onclick="initQuizGame()" class="px-4 py-2 bg-medical-600 text-white rounded-lg text-xs font-bold hover:bg-medical-700 transition">Siguiente Pregunta <i class="fa-solid fa-arrow-right"></i></button>
@@ -1074,9 +1081,7 @@
         }
 
         function checkQuizAnswer(btn, selected, correct) {
-            const options = document.querySelectorAll('#quizOptionsGrid button');
-            options.forEach(b => b.disabled = true);
-
+            document.querySelectorAll('#quizOptionsGrid button').forEach(b => b.disabled = true);
             const feedback = document.getElementById('quizFeedback');
             const feedbackText = document.getElementById('quizFeedbackText');
             feedback.classList.remove('hidden');
@@ -1086,22 +1091,19 @@
             if(selected === correct) {
                 btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
                 feedback.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
-                feedbackText.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> ¡Correcto! Excelente respuesta.';
-                
+                feedbackText.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> ¡Correcto!';
                 stats.correct++;
                 stats.streak++;
                 stats.score += 10;
             } else {
                 btn.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-800');
                 feedback.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
-                feedbackText.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 mr-2"></i> Incorrecto. La respuesta correcta era: <strong>${correct}</strong>`;
+                feedbackText.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 mr-2"></i> Incorrecto. Correcta: <strong>${correct}</strong>`;
                 stats.streak = 0;
             }
-
             saveAndUpdateStats();
         }
 
-        // Juego Clínico
         function initClinicalGame() {
             const container = document.getElementById('gameActiveArea');
             const targetAa = aminoAcids[Math.floor(Math.random() * aminoAcids.length)];
@@ -1116,16 +1118,13 @@
             container.innerHTML = `
                 <div class="space-y-6">
                     <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-                        <span>CASO / DATO CLÍNICO RELEVANTE</span>
+                        <span>CASO CLÍNICO RELEVANTE</span>
                         <span class="text-purple-600"><i class="fa-solid fa-user-doctor"></i> +15 Puntos</span>
                     </div>
-
                     <div class="bg-purple-50 border border-purple-100 p-4 rounded-xl text-purple-900 text-sm leading-relaxed font-medium">
                         "${targetAa.clinical}"
                     </div>
-
                     <h4 class="font-bold text-slate-700 text-sm">¿A qué aminoácido corresponde esta correlación médica?</h4>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="clinicalOptionsGrid">
                         ${options.map(opt => `
                             <button onclick="checkClinicalAnswer(this, '${opt}', '${targetAa.name}')" class="p-4 rounded-xl border border-slate-200 hover:border-purple-500 hover:bg-purple-50 font-semibold text-slate-700 text-left transition flex justify-between items-center">
@@ -1135,7 +1134,6 @@
                         `).join('')}
                     </div>
                 </div>
-
                 <div id="clinicalFeedback" class="mt-4 hidden p-4 rounded-xl font-semibold text-sm flex justify-between items-center">
                     <span id="clinicalFeedbackText"></span>
                     <button onclick="initClinicalGame()" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold hover:bg-purple-700 transition">Siguiente Caso <i class="fa-solid fa-arrow-right"></i></button>
@@ -1144,9 +1142,7 @@
         }
 
         function checkClinicalAnswer(btn, selected, correct) {
-            const options = document.querySelectorAll('#clinicalOptionsGrid button');
-            options.forEach(b => b.disabled = true);
-
+            document.querySelectorAll('#clinicalOptionsGrid button').forEach(b => b.disabled = true);
             const feedback = document.getElementById('clinicalFeedback');
             const feedbackText = document.getElementById('clinicalFeedbackText');
             feedback.classList.remove('hidden');
@@ -1156,8 +1152,7 @@
             if(selected === correct) {
                 btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
                 feedback.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
-                feedbackText.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> ¡Diagnóstico / Respuesta acertada!';
-                
+                feedbackText.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i> ¡Diagnóstico Acertado!';
                 stats.correct++;
                 stats.streak++;
                 stats.score += 15;
@@ -1167,15 +1162,12 @@
                 feedbackText.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 mr-2"></i> Incorrecto. Corresponde a: <strong>${correct}</strong>`;
                 stats.streak = 0;
             }
-
             saveAndUpdateStats();
         }
 
-        // Juego de Emparejamiento
         let selectedMatchItem = null;
         function initMatchGame() {
             const container = document.getElementById('gameActiveArea');
-            // Seleccionar 4 aminoácidos aleatorios
             const sample = [...aminoAcids].sort(() => Math.random() - 0.5).slice(0, 4);
 
             const names = sample.map(a => ({ id: a.id, text: a.name, type: 'name' })).sort(() => Math.random() - 0.5);
@@ -1187,9 +1179,7 @@
                         <span>EMPAREJAMIENTO DE AMINOÁCIDOS CON CÓDIGOS</span>
                         <span class="text-mint-600"><i class="fa-solid fa-puzzle-piece"></i> +20 Puntos al completar</span>
                     </div>
-
                     <p class="text-xs text-slate-500">Selecciona un elemento de la izquierda y conéctalo con su correspondiente en la derecha.</p>
-
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-2" id="matchNamesCol">
                             ${names.map(n => `
@@ -1207,7 +1197,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="mt-4 flex justify-end">
                     <button onclick="initMatchGame()" class="px-4 py-2 bg-mint-600 text-white rounded-lg text-xs font-bold hover:bg-mint-700 transition">Nuevo Juego <i class="fa-solid fa-rotate-right"></i></button>
                 </div>
@@ -1223,14 +1212,11 @@
                 btn.classList.add('border-mint-500', 'bg-mint-100', 'text-mint-900');
             } else {
                 if(selectedMatchItem.type === type) {
-                    // Mismo lado, cambiar selección
                     selectedMatchItem.btn.classList.remove('border-mint-500', 'bg-mint-100', 'text-mint-900');
                     selectedMatchItem = { btn, id, type };
                     btn.classList.add('border-mint-500', 'bg-mint-100', 'text-mint-900');
                 } else {
-                    // Verificar pareja
                     if(selectedMatchItem.id === id) {
-                        // Pareja correcta
                         btn.classList.remove('bg-mint-100');
                         btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
                         btn.disabled = true;
@@ -1241,7 +1227,6 @@
 
                         selectedMatchItem = null;
 
-                        // Verificar si terminó todo
                         const remaining = document.querySelectorAll('#matchNamesCol button:not([disabled])');
                         if(remaining.length === 0) {
                             stats.score += 20;
@@ -1250,7 +1235,6 @@
                             saveAndUpdateStats();
                         }
                     } else {
-                        // Pareja incorrecta
                         btn.classList.add('bg-rose-100', 'border-rose-500');
                         selectedMatchItem.btn.classList.add('bg-rose-100', 'border-rose-500');
                         
@@ -1264,7 +1248,7 @@
             }
         }
 
-        // SIMULADOR pH Y PUNTO ISOELÉCTRICO
+        // SIMULADOR
         function populateCalculatorSelect() {
             const select = document.getElementById('calcAminoSelect');
             select.innerHTML = aminoAcids.map(a => `<option value="${a.id}">${a.name} (${a.code3})</option>`).join('');
@@ -1289,20 +1273,14 @@
             }
             document.getElementById('pI-val').innerText = aa.pI;
 
-            // Lógica de cálculo de Carga Neta
-            // Carga -COOH (pK1) -> Protonado (+0) a pH < pK1, Desprotonado (-1) a pH > pK1
             let carboxylCharge = ph < aa.pk1 ? 0 : -1;
-            // Carga -NH3+ (pK2) -> Protonado (+1) a pH < pK2, Desprotonado (0) a pH > pK2
             let aminoCharge = ph < aa.pk2 ? 1 : 0;
 
-            // Carga Cadena Lateral
             let sideChainCharge = 0;
             if(aa.pkR) {
                 if(aa.category === 'acidic') {
-                    // Ácido (Asp, Glu) -> desprotonado da -1
                     sideChainCharge = ph < aa.pkR ? 0 : -1;
                 } else if(aa.category === 'basic') {
-                    // Básico (Lys, Arg, His) -> protonado da +1
                     sideChainCharge = ph < aa.pkR ? 1 : 0;
                 } else if(aa.id === 'cys' || aa.id === 'tyr') {
                     sideChainCharge = ph < aa.pkR ? 0 : -1;
@@ -1310,8 +1288,6 @@
             }
 
             const netCharge = carboxylCharge + aminoCharge + sideChainCharge;
-
-            // Actualizar Badges e Interfaz
             const chargeBadge = document.getElementById('netChargeBadge');
             chargeBadge.innerText = (netCharge > 0 ? `+${netCharge}` : `${netCharge}`);
 
@@ -1323,12 +1299,10 @@
                 chargeBadge.className = "mt-1 inline-block text-2xl font-extrabold px-6 py-2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200";
             }
 
-            // Grupos moleculares visuales
             document.getElementById('aminoGroupState').innerText = aminoCharge === 1 ? 'H₃N⁺' : 'H₂N';
             document.getElementById('carboxylGroupState').innerText = carboxylCharge === -1 ? 'COO⁻' : 'COOH';
             document.getElementById('sideChainState').innerText = aa.groupR;
 
-            // Aviso Zwitterión
             const isoelectricNotice = document.getElementById('isoelectricNotice');
             if(Math.abs(ph - aa.pI) < 0.2 || netCharge === 0) {
                 isoelectricNotice.classList.remove('hidden');
@@ -1337,7 +1311,6 @@
             }
         }
 
-        // ESTADÍSTICAS Y AUTOEVALUACIÓN
         function saveAndUpdateStats() {
             localStorage.setItem('bioamino_stats', JSON.stringify(stats));
             updateStatsUI();
